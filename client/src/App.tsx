@@ -11,10 +11,20 @@ import CreatePost from "./pages/CreatePost";
 import Post from "./pages/Post";
 import Login from "./pages/Login";
 import Registration from "./pages/Registration";
+import { AuthContext } from "./helpers/AuthContext";
+import { useEffect, useState } from "react";
 
 export interface IAppProps {}
 
 export default function App(props: IAppProps) {
+  const [authState, setAuthState] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("accessToken")) {
+      setAuthState(true);
+    }
+  }, []);
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Navbar />}>
@@ -29,7 +39,9 @@ export default function App(props: IAppProps) {
 
   return (
     <div className="App">
-      <RouterProvider router={router} />
+      <AuthContext.Provider value={{ authState, setAuthState }}>
+        <RouterProvider router={router} />
+      </AuthContext.Provider>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { PostType } from "./Home";
 
 type CommentType = {
   commentBody: string;
+  username: string;
   id?: number;
 };
 
@@ -44,13 +45,28 @@ export default function Post(props: IPostProps) {
 
   const addComment = async () => {
     try {
-      await axios.post("http://localhost:3001/comments", {
-        commentBody: newComment,
-        PostId: id,
-      });
-      const commentToAdd = { commentBody: newComment };
-      setComments([...comments, commentToAdd]);
-      setNewComment("");
+      const response = await axios.post(
+        "http://localhost:3001/comments",
+        {
+          commentBody: newComment,
+          PostId: id,
+        },
+        {
+          headers: {
+            accessToken: localStorage.getItem("accessToken"),
+          },
+        }
+      );
+      if (response.data.error) {
+        alert(response.data.error);
+      } else {
+        const commentToAdd = {
+          commentBody: newComment,
+          username: response.data.username,
+        };
+        setComments([...comments, commentToAdd]);
+        setNewComment("");
+      }
     } catch (err) {
       console.log(err);
     }
@@ -80,6 +96,7 @@ export default function Post(props: IPostProps) {
           {comments.map((comment) => (
             <div key={comment.id} className="comment">
               {comment.commentBody}
+              <label> Username: {comment.username}</label>
             </div>
           ))}
         </div>

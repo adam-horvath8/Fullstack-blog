@@ -3,6 +3,8 @@ const router = express.Router();
 const { Users } = require("../models");
 const bcrypt = require("bcrypt");
 
+const { sign } = require("jsonwebtoken");
+
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
   bcrypt.hash(password, 10).then((hash) => {
@@ -30,7 +32,11 @@ router.post("/login", async (req, res) => {
       return res.json({ error: "Wrong username and password combination" });
     }
 
-    res.json({ message: "You logged in successfully" });
+    const accesToken = sign(
+      { username: user.username, id: user.id },
+      "importantsecret"
+    );
+    res.json(accesToken);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });

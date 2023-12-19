@@ -26,7 +26,7 @@ export default function CreatePost(props: ICreatePostProps) {
     const createPost = async () => {
       try {
         await axios.post("http://localhost:3001/posts", data);
-        navigate("/")
+        navigate("/home")
       } catch (err) {
         console.log(err);
       }
